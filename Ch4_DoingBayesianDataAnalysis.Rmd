@@ -1,0 +1,6 @@
+---
+title: "Doing Bayesian data analysis: A tutorial with R, JAGS, and Stan"
+subtitle: "Chapter 4 - What Is This Stuff Called Probability?"
+output: html_notebook
+---
+
