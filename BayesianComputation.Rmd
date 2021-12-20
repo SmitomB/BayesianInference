@@ -1,0 +1,95 @@
+---
+title: "Bayesian Computation in R by Jim Albert"
+date: "12/19/2021"
+output: 
+  html_notebook:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+cat("\014"); rm(list=ls(all=TRUE)); graphics.off()
+```
+
+
+# Introduction to Bayesian thinking
+We take the likelihood function as a beta function:
+$$
+L(p) = p^s(1-p)^f,\ \  0<p<1
+$$
+and the posterior distribution is proportional to product of prior density and likelihood function:
+$$
+g(p|data) \propto g(p)L(p)
+$$
+
+## Finding posterior distribution using Discrete Prior
+We try to find the posterior distribution of the population proportion, p, for the problem given in the book.
+
+```{r}
+# Possible prior values
+p <- seq(0.05,0.95, by = 0.1)
+
+# Assumed prior distribution for the discrete priors
+prior <- c(2,4,8,8,4,2,1,1,1,1)
+prior <- prior/sum(prior)
+
+# Quick plot of the prior distribution
+plot(p,prior,type = "h",ylab = "Prior Probability")
+
+# Assuming 11 of 27 students sleep at least 8 hours a day
+likelihood_func <- function(x){
+  return(x^(11)*(1-x)^(27-11))
+}
+
+
+# posterior dist = prior dist * likelihood/sum(prior dist * likelihood)
+post <- prior*likelihood_func(p)/sum(prior*likelihood_func(p))
+
+# Combining into a data frame
+prior_post <- cbind(p,prior,post)
+prior_post
+
+# Quick plot of the posterior distribution
+plot(p,post,type = "h",ylab = "Posterior Probability")
+```
+
+## Finding posterior distribution using a beta function
+We assume that the median and 90^th^ percentiles be 0.3 and 0.5 and the beta density of the prior be a = 3.4 and b = 7.4
+```{r}
+# Possible prior values
+p_beta <- seq(0,1,length = 500)
+
+# density function parameters
+a <- 3.4
+b <- 7.4
+
+# Assuming 11 of 27 students sleep at least 8 hours a day
+s <- 11    # s : success
+f <- 16    # f : fail
+
+# Prior distribution
+prior_beta <- dbeta(p_beta,a,b)
+
+# Likelihood distribution
+like_beta <- dbeta(p_beta,s+1,f+1)
+
+# Posterior distribution
+post_beta <- dbeta(p_beta,a+s,b+f)
+
+# Quick plot
+plot(p_beta, post_beta, ylab = "Density", lty = 2, lwd = 2, type = "l")
+lines(p_beta, like_beta, lty = 1, lwd = 2)
+lines(p_beta, prior_beta, lty = 3, lwd = 2)
+legend(0.7, 4, c("Prior", "Likelihood", "Posterior"), lty=c(3,1,2), lwd = c(3,3,3) )
+
+
+```
+
+
+
+
+
+
+
